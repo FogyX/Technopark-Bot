@@ -4,6 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserBotModule } from './modules/user-bot/user-bot.module';
 import { AdminBotModule } from './modules/admin-bot/admin-bot.module';
 import { StaffBotModule } from './modules/staff-bot/staff-bot.module';
+import { LeaderIdModule } from './modules/leader-id/leader-id.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { LeaderIdTokenService } from './modules/leader-id/leader-id-token.service';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -19,7 +24,7 @@ import { StaffBotModule } from './modules/staff-bot/staff-bot.module';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [],
+        entities: [User],
         synchronize: true,
       }),
       inject: [ConfigService],
@@ -27,6 +32,10 @@ import { StaffBotModule } from './modules/staff-bot/staff-bot.module';
     UserBotModule,
     AdminBotModule,
     StaffBotModule,
+    LeaderIdModule,
+    AuthModule,
+    UserModule,
   ],
+  providers: [LeaderIdTokenService],
 })
 export class AppModule {}
