@@ -3,10 +3,10 @@ import axios from 'axios';
 import { UserService } from '../user/user.service';
 
 @Injectable()
-export class LeaderIdTokenService {
+export class LeaderIdUserTokenService {
   constructor(private userService: UserService) {}
 
-  async getValidAccessToken(telegramId: string) {
+  async getValidUserAccessToken(telegramId: string) {
     const user = await this.userService.findByTelegramId(telegramId);
     if (!user || !user.leader_id_access_token) throw new Error('No token');
 
@@ -31,11 +31,6 @@ export class LeaderIdTokenService {
         accessToken: access_token,
         refreshToken: refresh_token,
         expiresAt,
-        username: user.username,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        phone: user.phone,
-        email: user.email,
       });
 
       return access_token;

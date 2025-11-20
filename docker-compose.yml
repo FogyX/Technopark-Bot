@@ -1,0 +1,31 @@
+  version: "3.9"
+
+  services:
+    app:
+      image: technoparkbot:latest
+      container_name: technoparkbot
+      env_file:
+        - .env
+      ports:
+        - "3000:3000"
+      depends_on:
+        - db
+      environment:
+        DATABASE_HOST: ${POSTGRES_HOST}
+        DATABASE_USER: ${POSTGRES_USER}
+        DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+        DATABASE_NAME: ${POSTGRES_DB}
+
+    db:
+      image: postgres:15
+      container_name: postgres_db
+      restart: always
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+  volumes:
+    postgres_data:

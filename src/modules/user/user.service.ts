@@ -7,23 +7,22 @@ import { Repository } from 'typeorm';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private usersRepo: Repository<User>,
+    private userRepo: Repository<User>,
   ) {}
 
   async findByTelegramId(id: string) {
-    return this.usersRepo.findOne({ where: { telegram_id: id } });
+    return this.userRepo.findOne({ where: { telegram_id: id } });
   }
 
   async createOrUpdateFromTelegram(ctxUser) {
     const existing = await this.findByTelegramId(ctxUser.id);
 
-    const data = {
-      telegram_id: ctxUser.id,
-      username: ctxUser.username,
-    };
-
     if (!existing) {
-      return this.usersRepo.save(this.usersRepo.create(data));
+      const data = {
+        telegram_id: ctxUser.id,
+        username: ctxUser.username,
+      };
+      return await this.userRepo.save(this.userRepo.create(data));
     }
 
     return existing;
@@ -59,12 +58,30 @@ export class UserService {
     user.leader_id_access_token = accessToken;
     user.leader_id_refresh_token = refreshToken;
     user.leader_id_expires_at = expiresAt;
-    user.username = username;
-    user.first_name = firstName;
-    user.last_name = lastName;
-    user.phone = phone;
-    user.email = email;
+    user.username = username ?? user.username;
+    user.first_name = firstName ?? user.first_name;
+    user.last_name = lastName ?? user.last_name;
+    user.phone = phone ?? user.phone;
+    user.email = email ?? user.email;
 
-    return this.usersRepo.save(user);
+    return this.userRepo.save(user);
+  }
+
+  async isSubscribed(userTelegramId: string) {
+    const user = await this.findByTelegramId(userTelegramId);
+    return user.is_subscribed;
+  }
+
+  async setSubscription(userTelegramId: string, value: boolean) {
+    const user = await this.findByTelegramId(userTelegramId);
+
+    user.is_subscribed = value;
+    await this.userRepo.save(user);
+  }
+
+  async getAllSubscribedUsers() {
+    return await this.userRepo.findBy({
+      is_subscribed: true,
+    });
   }
 }

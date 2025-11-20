@@ -34,6 +34,7 @@ export class AuthController {
 
     const { firstName, lastName, phone, email } =
       await this.leaderIdApiService.getUserProfile(user_id, access_token);
+
     await this.userService.updateProfile({
       telegramId,
       leaderId: user_id,
